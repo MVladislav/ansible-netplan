@@ -1,0 +1,43 @@
+---
+# tasks file for roles/netplan
+
+# ------------------------------------------------------------------------------
+
+- name: "search files to delete in {{ netplan_dir }}"
+  become: yes
+  find:
+    paths: "{{ netplan_dir }}"
+    patterns: "*.yml,*yaml"
+  register: files_to_delete
+  when: netplan_remove_existing | bool
+  tags: netplan
+
+- name: "delete founded files in {{ netplan_dir }}"
+  become: yes
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ files_to_delete.files | flatten(levels=1) }}"
+  when: files_to_delete.files is defined and netplan_remove_existing | bool
+  tags: netplan
+
+# ------------------------------------------------------------------------------
+
+- name: "copy netplan.yaml template into {{ netplan_dir }}/{{ netplan_file }}"
+  become: yes
+  ansible.builtin.template:
+    src: "{{ 'netplan.yaml.j2' | from_yaml }}"
+    dest: "{{ netplan_dir }}/{{ netplan_file }}"
+    owner: root
+    group: root
+    mode: "0640"
+  register: netplan_changed_template
+  tags: netplan
+
+# ------------------------------------------------------------------------------
+
+- name: apply setup
+  become: yes
+  command: netplan apply
+  when: netplan_changed_template.changed
+  tags: netplan

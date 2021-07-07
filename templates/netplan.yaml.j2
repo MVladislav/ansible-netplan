@@ -1,0 +1,45 @@
+#jinja2:lstrip_blocks: True
+#jinja2:trim_blocks: True
+network:
+  version: 2
+  {# if interface is set all values will set, else the NetworkManager will be used #}
+  {% if netplan_interface_name is defined and netplan_interface_name is True %}
+  renderer: networkd
+  ethernets:
+    {# here starts the interface definition #}
+    {{ netplan_interface_name }}:
+      {# define dhcp setting for v4 and v6 #}
+      dhcp4: {{ netplan_dhcp_4 | default('yes') }}
+      dhcp6: {{ netplan_dhcp_6 | default('no') }}
+      {# define addresses #}
+      {% if netplan_addresses is defined and netplan_addresses is not none %}
+      addresses:
+        {% for n_address in netplan_addresses %}
+        - {{ n_address }}
+        {% endfor %}
+      {% endif %}
+      {# define gateway #}
+      {% if netplan_gateway_4 is defined and netplan_gateway_4 is not none %}
+      gateway4: {{ netplan_gateway_4 }}
+      {% endif %}
+      {# define default routes, if no gateway is set #}
+      {% if netplan_router is defined and netplan_router is not none %}
+      routes:
+        {% for n_router in netplan_router %}
+        - to: {{ n_router.to }}
+          via: {{ n_router.via }}
+          metric: {{ n_router.metric }}
+        {% endfor %}
+      {% endif %}
+      {# set nameservers #}
+      {% if netplan_nameserver_addresses is defined and netplan_nameserver_addresses is not none %}
+      nameservers:
+        addresses:
+          {% for n_server in netplan_nameserver_addresses %}
+          - {{ n_server }}
+          {% endfor %}
+      {% endif %}
+  {# else the NetworkManager will used #}
+  {% else %}
+  renderer: NetworkManager
+  {% endif %}
