@@ -3,7 +3,7 @@
 network:
   version: 2
   {# if interface is set all values will set, else the NetworkManager will be used #}
-  {% if netplan_interface_name is defined and netplan_interface_name is True %}
+  {% if netplan_interface_name is defined and netplan_interface_name %}
   renderer: networkd
   ethernets:
     {# here starts the interface definition #}
