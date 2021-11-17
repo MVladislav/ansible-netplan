@@ -23,21 +23,44 @@
 
 # ------------------------------------------------------------------------------
 
+# - name: "copy netplan.yaml template into {{ netplan_dir }}/{{ netplan_file }}"
+#   become: yes
+#   ansible.builtin.template:
+#     src: "{{ 'netplan.yaml.j2' | from_yaml }}"
+#     dest: "{{ netplan_dir }}/{{ netplan_file }}"
+#     owner: root
+#     group: root
+#     mode: "0640"
+#   register: netplan_changed_template
+#   when: netplan_renderer == 'networkd'
+#   tags: netplan
+
 - name: "copy netplan.yaml template into {{ netplan_dir }}/{{ netplan_file }}"
-  become: yes
-  ansible.builtin.template:
+  become: true
+  template:
     src: "{{ 'netplan.yaml.j2' | from_yaml }}"
     dest: "{{ netplan_dir }}/{{ netplan_file }}"
     owner: root
     group: root
     mode: "0640"
   register: netplan_changed_template
+  when: netplan_configuration is defined and netplan_configuration != []
+  notify: netplan generate config
   tags: netplan
 
 # ------------------------------------------------------------------------------
 
-- name: apply setup
-  become: yes
-  command: netplan apply
-  when: netplan_changed_template.changed
-  tags: netplan
+# - name: apply setup
+#   become: yes
+#   command: netplan apply
+#   when: netplan_changed_template.changed
+#   tags: netplan
+
+# ------------------------------------------------------------------------------
+
+- name: disable and stop systemd-resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+  when: netplan_renderer != 'networkd'
