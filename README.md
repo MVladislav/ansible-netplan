@@ -32,7 +32,11 @@ netplan_configuration:
           addresses:
             - 1.1.1.1
             - 1.0.0.1
-        gateway4: "{{ ansible_host.split('.')[0:3] | join('.') }}.1"
+          search:
+            - localdomain
+        routes:
+          - to: default
+            via: "{{ ansible_host.split('.')[0:3] | join('.') }}.1"
 ```
 
 ## Dependencies
