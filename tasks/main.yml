@@ -4,7 +4,7 @@
 # ------------------------------------------------------------------------------
 
 - name: "search files to delete in {{ netplan_dir }}"
-  become: yes
+  become: true
   find:
     paths: "{{ netplan_dir }}"
     patterns: "*.yml,*yaml"
@@ -13,7 +13,7 @@
   tags: netplan
 
 - name: "delete founded files in {{ netplan_dir }}"
-  become: yes
+  become: true
   file:
     path: "{{ item.path }}"
     state: absent
@@ -24,7 +24,7 @@
 # ------------------------------------------------------------------------------
 
 # - name: "copy netplan.yaml template into {{ netplan_dir }}/{{ netplan_file }}"
-#   become: yes
+#   become: true
 #   ansible.builtin.template:
 #     src: "{{ 'netplan.yaml.j2' | from_yaml }}"
 #     dest: "{{ netplan_dir }}/{{ netplan_file }}"
@@ -51,7 +51,7 @@
 # ------------------------------------------------------------------------------
 
 # - name: apply setup
-#   become: yes
+#   become: true
 #   command: netplan apply
 #   when: netplan_changed_template.changed
 #   tags: netplan
