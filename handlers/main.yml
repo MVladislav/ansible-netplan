@@ -1,2 +1,15 @@
 ---
 # handlers file for roles/netplan
+
+- name: generating netplan configuration
+  become: true
+  command: netplan generate
+  listen: netplan generate config
+  notify: netplan apply config
+  register: netplan_apply
+
+- name: applying netplan configuration
+  become: true
+  command: netplan apply
+  listen: netplan apply config
+  when: netplan_apply is not defined or netplan_apply
