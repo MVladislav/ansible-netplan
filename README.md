@@ -1,6 +1,8 @@
 # Role Name
 
-A brief description of the role goes here.
+**netplan**
+
+[![Ansible Lint](https://github.com/MVladislav/ansible-netplan/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/MVladislav/ansible-netplan/actions/workflows/ansible-lint.yml)
 
 ## Requirements
 
