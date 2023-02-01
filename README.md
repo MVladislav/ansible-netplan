@@ -11,6 +11,7 @@ Any pre-requisites that may not be covered by Ansible itself or the role should 
 ## Role Variables
 
 ```yml
+netplan_install: no
 netplan_remove_existing: no
 netplan_service_name: default
 
@@ -29,7 +30,7 @@ netplan_configuration:
         dhcp4: yes
         dhcp6: no
         addresses:
-          - "{{ ansible_host }}/24"
+          - "{{ ansible_default_ipv4.address }}/24"
         nameservers:
           addresses:
             - 1.1.1.1
@@ -38,7 +39,7 @@ netplan_configuration:
             - localdomain
         routes:
           - to: default
-            via: "{{ ansible_host.split('.')[0:3] | join('.') }}.1"
+            via: "{{ ansible_default_ipv4.address.split('.')[0:3] | join('.') }}.1"
 ```
 
 ## Dependencies

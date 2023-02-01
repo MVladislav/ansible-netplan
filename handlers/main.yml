@@ -1,15 +1,20 @@
 ---
 # handlers file for roles/netplan
 
-- name: generating netplan configuration
+- name: "NETPLAN | generating netplan configuration"
   become: true
-  command: netplan generate
+  ansible.builtin.command: netplan generate
   listen: netplan generate config
   notify: netplan apply config
   register: netplan_apply
+  tags:
+    - netplan
 
-- name: applying netplan configuration
+- name: "NETPLAN | applying netplan configuration"
   become: true
-  command: netplan apply
+  ansible.builtin.command: netplan apply
   listen: netplan apply config
-  when: netplan_apply is not defined or netplan_apply
+  when:
+    - netplan_apply is not defined or netplan_apply | bool
+  tags:
+    - netplan

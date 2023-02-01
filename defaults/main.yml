@@ -1,6 +1,7 @@
 ---
 # defaults file for roles/netplan
 
+netplan_install: no
 netplan_remove_existing: no
 netplan_service_name: default
 
@@ -19,13 +20,14 @@ netplan_configuration:
         dhcp4: yes
         dhcp6: no
         addresses:
-          - "{{ ansible_host }}/24"
+          - "{{ ansible_default_ipv4.address }}/24"
         nameservers:
           addresses:
             - 1.1.1.1
             - 1.0.0.1
-        gateway4: "{{ ansible_host.split('.')[0:3] | join('.') }}.1"
+        gateway4: "{{ ansible_default_ipv4.address.split('.')[0:3] | join('.') }}.1"
 #
+# EXAMPLE:
 # netplan_configuration:
 #   {}
 # network:
