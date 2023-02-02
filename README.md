@@ -3,6 +3,7 @@
 **netplan**
 
 [![Ansible Lint](https://github.com/MVladislav/ansible-netplan/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/MVladislav/ansible-netplan/actions/workflows/ansible-lint.yml)
+[![Ansible Molecule Test](https://github.com/MVladislav/ansible-netplan/actions/workflows/ci.yml/badge.svg)](https://github.com/MVladislav/ansible-netplan/actions/workflows/ci.yml)
 
 ## Requirements
 
