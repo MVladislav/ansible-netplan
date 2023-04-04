@@ -57,7 +57,7 @@
     dest: "{{ netplan_dir }}/{{ netplan_file }}"
     owner: root
     group: root
-    mode: "0640"
+    mode: "0600"
   register: netplan_changed_template
   when: netplan_configuration is defined and netplan_configuration != []
   notify: netplan generate config
