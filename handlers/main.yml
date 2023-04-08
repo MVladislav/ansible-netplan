@@ -4,6 +4,8 @@
 - name: "NETPLAN | generating netplan configuration"
   become: true
   ansible.builtin.command: netplan generate
+  changed_when: false
+  failed_when: false
   listen: netplan generate config
   notify: netplan apply config
   register: netplan_apply
@@ -13,6 +15,8 @@
 - name: "NETPLAN | applying netplan configuration"
   become: true
   ansible.builtin.command: netplan apply
+  changed_when: false
+  failed_when: false
   listen: netplan apply config
   when:
     - netplan_apply is not defined or netplan_apply | bool
