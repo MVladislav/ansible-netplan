@@ -69,7 +69,7 @@
   ansible.builtin.systemd:
     name: systemd-resolved
     state: stopped
-    enabled: no
+    enabled: false
   when: netplan_renderer != 'networkd'
   tags:
     - netplan

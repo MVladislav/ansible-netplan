@@ -1,8 +1,8 @@
 ---
 # defaults file for roles/netplan
 
-netplan_install: no
-netplan_remove_existing: no
+netplan_install: false
+netplan_remove_existing: false
 netplan_service_name: default
 
 # NetworkManager | networkd
@@ -17,8 +17,8 @@ netplan_configuration:
   network:
     ethernets:
       eth0:
-        dhcp4: yes
-        dhcp6: no
+        dhcp4: true
+        dhcp6: false
         addresses:
           - "{{ ansible_default_ipv4.address }}/24"
         nameservers:
@@ -64,8 +64,8 @@ netplan_configuration:
 #       addresses: [7.7.7.7/32]
 #   wifis:
 #     wlp2s0b1:
-#       dhcp4: no
-#       dhcp6: no
+#       dhcp4: false
+#       dhcp6: false
 #       addresses: [192.168.0.21/24]
 #       gateway4: 192.168.0.1
 #       access-points:
@@ -73,7 +73,7 @@ netplan_configuration:
 #           password: "**********"
 #   bonds:
 #     bond0:
-#       dhcp4: yes
+#       dhcp4: true
 #       interfaces:
 #         - enp0s3
 #         - enp4s0
@@ -84,7 +84,7 @@ netplan_configuration:
 #         primary: enp0s3
 #   bridges:
 #     # br0:
-#     #   dhcp4: yes
+#     #   dhcp4: true
 #     #   interfaces:
 #     #     - enp0s3
 #     br0:
@@ -92,6 +92,6 @@ netplan_configuration:
 #       interfaces: [vlan15]
 #   vlans:
 #     vlan15:
-#       accept-ra: no
+#       accept-ra: false
 #       id: 15
 #       link: enp0s25
