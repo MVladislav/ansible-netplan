@@ -33,7 +33,9 @@
     path: "{{ item.path }}"
     state: absent
   loop: "{{ files_to_delete.files | flatten(levels=1) }}"
-  when: files_to_delete.files is defined and netplan_remove_existing | bool
+  when:
+    - files_to_delete.files is defined
+    - netplan_remove_existing | bool
   tags:
     - netplan
 
@@ -59,7 +61,9 @@
     group: root
     mode: "0600"
   register: netplan_changed_template
-  when: netplan_configuration is defined and netplan_configuration != []
+  when:
+    - netplan_configuration is defined
+    - netplan_configuration != []
   notify: netplan generate config
   tags:
     - netplan
@@ -70,6 +74,7 @@
     name: systemd-resolved
     state: stopped
     enabled: false
-  when: netplan_renderer != 'networkd'
+  when:
+    - netplan_renderer != 'networkd'
   tags:
     - netplan
