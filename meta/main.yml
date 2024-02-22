@@ -4,7 +4,7 @@ galaxy_info:
   description: Ansible role for install & setup netplan
   company: none
   license: MIT
-  min_ansible_version: "2.9"
+  min_ansible_version: "2.14"
   role_name: netplan
   namespace: mvladislav
 

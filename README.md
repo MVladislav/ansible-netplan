@@ -1,13 +1,21 @@
-# Role Name
-
-**netplan**
+# Netplan
 
 [![Ansible Lint](https://github.com/MVladislav/ansible-netplan/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/MVladislav/ansible-netplan/actions/workflows/ansible-lint.yml)
 [![Ansible Molecule Test](https://github.com/MVladislav/ansible-netplan/actions/workflows/ci.yml/badge.svg)](https://github.com/MVladislav/ansible-netplan/actions/workflows/ci.yml)
 
-## Requirements
+- [Netplan](#netplan)
+  - [Role Variables](#role-variables)
+  - [Dependencies](#dependencies)
+  - [Example Playbook](#example-playbook)
+  - [License](#license)
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+---
+
+You can checkout [MVladislav - ansible-env-setup - playbooks](https://github.com/MVladislav/ansible-env-setup/tree/main/playbooks) for how i use it in general.
+
+Tested with:
+
+- Ubuntu 23.04
 
 ## Role Variables
 
@@ -45,11 +53,9 @@ netplan_configuration:
 
 ## Dependencies
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Developed and testes with Ansible 2.14.4
 
 ## Example Playbook
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
 ```yml
 - hosts: clients
@@ -78,8 +84,4 @@ Including an example of how to use your role (for instance, with variables passe
 
 ## License
 
-GNU AFFERO GENERAL PUBLIC LICENSE
-
-## Author Information
-
-MVladislav
+MIT
