@@ -3,7 +3,7 @@
   hosts: all
   tasks:
     - name: "Include ansible-netplan"
-      include_role:
+      ansible.builtin.include_role:
         name: "ansible-netplan"
   vars:
     netplan_install: yes
