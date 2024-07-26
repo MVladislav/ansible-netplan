@@ -51,7 +51,7 @@
   when:
     - netplan_configuration is defined
     - netplan_configuration != []
-  notify: netplan generate config
+  notify: Netplan generate config
   tags:
     - netplan
 

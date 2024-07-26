@@ -6,8 +6,8 @@
   ansible.builtin.command: netplan generate
   changed_when: false
   failed_when: false
-  listen: netplan generate config
-  notify: netplan apply config
+  listen: Netplan generate config
+  notify: Netplan apply config
   register: netplan_apply
   tags:
     - netplan
