@@ -12,86 +12,150 @@ netplan_version: 2
 netplan_dir: /etc/netplan
 netplan_file: "00-{{ netplan_service_name }}.yaml"
 
-# for template
+# Default interface used by the basic configuration below.
+netplan_default_iface: >-
+  {{ (ansible_facts | default({})).get('default_ipv4', {}).get('interface')
+     or (ansible_facts | default({})).get('default_ipv6', {}).get('interface')
+     or 'eth0' }}
+
+# Basic default: configure the default interface with DHCP for IPv4 and IPv6.
 netplan_configuration:
   network:
-    ethernets:
-      eth0:
-        dhcp4: true
-        dhcp6: false
-        addresses:
-          - "{{ ansible_default_ipv4.address }}/24"
-        nameservers:
-          addresses:
-            - 1.1.1.1
-            - 1.0.0.1
-        gateway4: "{{ ansible_default_ipv4.address.split('.')[0:3] | join('.') }}.1"
+    ethernets: "{{ {netplan_default_iface: {'dhcp4': true, 'dhcp6': true}} }}"
+
+# EXAMPLES:
 #
-# EXAMPLE:
+# 1) Normal server example (DHCP on the network, networkd):
+#
+# netplan_remove_existing: false
+# netplan_renderer: networkd
+# netplan_default_iface: >-
+#   {{ (ansible_facts | default({})).get('default_ipv4', {}).get('interface')
+#      or (ansible_facts | default({})).get('default_ipv6', {}).get('interface')
+#      or 'eth0' }}
+# netplan_default_mac: >-
+#   {{ (ansible_facts | default({})).get('default_ipv4', {}).get('macaddress')
+#      or (ansible_facts | default({})).get('default_ipv6', {}).get('macaddress')
+#      or '' }}
+# netplan_iface_cfg_server:
+#   dhcp4: true
+#   dhcp6: true
+#   match:
+#     macaddress: "{{ netplan_default_mac }}"
+#   set-name: "{{ netplan_default_iface }}"
+#   # Optional: nameservers, extra addresses, static routes, etc.
 # netplan_configuration:
-#   {}
-# network:
-#   ethernets:
-#     enp0s3:
-#       dhcp4: true
-#     enp0s8:
-#       addresses:
-#         - 192.168.250.10/24
-#         - 192.168.250.11/24
-#       nameservers:
-#         addresses:
-#           - 10.0.2.3
-#           - 8.8.8.8
-#           - 8.8.4.4
-#         search:
-#           # Custom variable
-#           - "{{ netplan_pri_domain }}"
-#       gateway4: 192.168.250.1
-#       optional: true
-#       routes:
-#         - to: 0.0.0.0/0
-#           via: 9.9.9.9
-#           on-link: true
-#         - to: 192.168.5.0/24
-#           via: 192.168.5.1
-#           table: 102
-#       routing-policy:
-#         - from: 192.168.5.0/24
-#           table: 102
-#     lo:
-#       match:
-#         name: lo
-#       addresses: [7.7.7.7/32]
-#   wifis:
-#     wlp2s0b1:
-#       dhcp4: false
-#       dhcp6: false
-#       addresses: [192.168.0.21/24]
-#       gateway4: 192.168.0.1
-#       access-points:
-#         "network_ssid_name":
-#           password: "**********"
-#   bonds:
-#     bond0:
-#       dhcp4: true
-#       interfaces:
-#         - enp0s3
-#         - enp4s0
-#       parameters:
-#         # modes can be one of balance-rr, active-backup, balance-xor, broadcast,
-#         # 802.3ad, balance-tlb, and balance-alb.
-#         mode: active-backup
-#         primary: enp0s3
-#   bridges:
-#     # br0:
-#     #   dhcp4: true
-#     #   interfaces:
-#     #     - enp0s3
-#     br0:
-#       addresses: [10.3.99.25/24]
-#       interfaces: [vlan15]
-#   vlans:
-#     vlan15:
-#       accept-ra: false
-#       id: 15
-#       link: enp0s25
+#   network:
+#     ethernets: "{{ {netplan_default_iface: netplan_iface_cfg_server} }}"
+#
+# 2) Hetzner-style server example (provider-specific IPv6 routed via link-local gateway):
+#
+# netplan_remove_existing: false
+# netplan_renderer: networkd
+# netplan_default_iface: >-
+#   {{ (ansible_facts | default({})).get('default_ipv4', {}).get('interface')
+#      or (ansible_facts | default({})).get('default_ipv6', {}).get('interface')
+#      or 'eth0' }}
+# netplan_default_mac: >-
+#   {{ (ansible_facts | default({})).get('default_ipv4', {}).get('macaddress')
+#      or (ansible_facts | default({})).get('default_ipv6', {}).get('macaddress')
+#      or '' }}
+# netplan_iface_cfg_server:
+#   dhcp4: true
+#   dhcp6: false
+#   match:
+#     macaddress: "{{ netplan_default_mac }}"
+#   set-name: "{{ netplan_default_iface }}"
+#   addresses:
+#     - "<YOUR_IPV6_ADDRESS_OR_PREFIX>/64" # replace with provider-assigned value
+#   routes:
+#     - on-link: true
+#       to: default
+#       via: "fe80::1"
+#   nameservers:
+#     addresses:
+#       - 2a01:4ff:ff00::add:1
+#       - 2a01:4ff:ff00::add:2
+# netplan_configuration:
+#   network:
+#     ethernets: "{{ {netplan_default_iface: netplan_iface_cfg_server} }}"
+#
+# 3) Client example (NetworkManager, deterministic UUID, custom netplan filename):
+#
+# netplan_remove_existing: false
+# netplan_renderer: NetworkManager
+# netplan_default_iface: >-
+#   {{ (ansible_facts | default({})).get('default_ipv4', {}).get('interface')
+#      or (ansible_facts | default({})).get('default_ipv6', {}).get('interface')
+#      or 'eth0' }}
+# netplan_default_mac: >-
+#   {{ (ansible_facts | default({})).get('default_ipv4', {}).get('macaddress')
+#      or (ansible_facts | default({})).get('default_ipv6', {}).get('macaddress')
+#      or '' }}
+# netplan_nm_uuid: "{{ (inventory_hostname ~ '-' ~ netplan_default_iface) | to_uuid }}"
+# netplan_service_name: "nm-{{ netplan_default_iface }}"
+# netplan_file: "90-{{ netplan_service_name }}.yaml"
+# netplan_iface_cfg_client:
+#   renderer: NetworkManager
+#   dhcp4: true
+#   dhcp6: true
+#   match:
+#     macaddress: "{{ netplan_default_mac }}"
+#   set-name: "{{ netplan_default_iface }}"
+#   networkmanager:
+#     uuid: "{{ netplan_nm_uuid }}"
+#     name: "{{ netplan_default_iface }}"
+#     # Optional NetworkManager passthrough settings:
+#     # passthrough:
+#     #   ipv6.ip6-privacy: "-1"
+# netplan_configuration:
+#   network:
+#     ethernets: "{{ {netplan_default_iface: netplan_iface_cfg_client} }}"
+#
+# 4) Dynamic IPv4 address/prefix and default route from target facts (routes-based):
+#
+# netplan_configuration:
+#   network:
+#     ethernets: >-
+#       {{ {
+#         netplan_default_iface: {
+#           'dhcp4': false,
+#           'dhcp6': false,
+#           'addresses': [
+#             (ansible_facts | default({})).get('default_ipv4', {}).get('address')
+#             ~ '/' ~ ((ansible_facts | default({})).get('default_ipv4', {}).get('prefix', 24) | string)
+#           ],
+#           'routes': [
+#             {'to': 'default', 'via': (ansible_facts | default({})).get('default_ipv4', {}).get('gateway')}
+#           ],
+#           'nameservers': {'addresses': ['1.1.1.1', '1.0.0.1']}
+#         }
+#       } }}
+#
+# 5) Dynamic IPv6 address/prefix and default route from target facts (routes-based):
+#
+# netplan_configuration:
+#   network:
+#     ethernets: >-
+#       {{ {
+#         netplan_default_iface: {
+#           'dhcp4': false,
+#           'dhcp6': false,
+#           'addresses': [
+#             (ansible_facts | default({})).get('default_ipv6', {}).get('address')
+#             ~ '/' ~ ((ansible_facts | default({})).get('default_ipv6', {}).get('prefix', 64) | string)
+#           ],
+#           'routes': [
+#             {'to': 'default', 'via': (ansible_facts | default({})).get('default_ipv6', {}).get('gateway')}
+#           ],
+#           'nameservers': {'addresses': ['2606:4700:4700::1111', '2606:4700:4700::1001']}
+#         }
+#       } }}
+#
+# Notes:
+# - Prefer `routes` with `to: default` instead of legacy `gateway4`/`gateway6`.
+# - For NetworkManager renderer (!= networkd), this role stops/disables systemd-resolved.
+# - Set netplan_remove_existing: true only if you intentionally want to remove other netplan files.
+# - For other netplan sections (wifis, bonds, bridges, vlans), define them under
+#   netplan_configuration.network. The template renders version/renderer from
+#   netplan_version/netplan_renderer.

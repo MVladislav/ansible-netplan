@@ -16,7 +16,7 @@
     - netplan
 
 # ------------------------------------------------------------------------------
-- name: "NETPLAN | search files to delete inside netplan directory"
+- name: "NETPLAN | find existing netplan files to remove"
   become: true
   ansible.builtin.find:
     paths: "{{ netplan_dir }}"
@@ -27,7 +27,7 @@
   tags:
     - netplan
 
-- name: "NETPLAN | delete founded files inside netplan directory"
+- name: "NETPLAN | remove found netplan files"
   become: true
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -39,10 +39,10 @@
   tags:
     - netplan
 
-- name: "NETPLAN | copy netplan.yaml template into netplan directory"
+- name: "NETPLAN | copy netplan template into netplan directory"
   become: true
   ansible.builtin.template:
-    src: "{{ 'netplan.yaml.j2' | from_yaml }}"
+    src: netplan.yaml.j2
     dest: "{{ netplan_dir }}/{{ netplan_file }}"
     owner: root
     group: root
